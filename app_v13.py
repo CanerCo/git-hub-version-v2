@@ -472,7 +472,7 @@ def run_ui():
         idx = load_index(args.index)
     
     # Title of the page
-    st.title("Arno Ruoff's Archive Search")
+    st.title("Exmaralda Archive Search")
     
     # style css for highlighting (yellow background red foreground)
     st.markdown("""
