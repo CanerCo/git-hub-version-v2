@@ -150,7 +150,8 @@ def render_map(df_points: pd.DataFrame, top_n_labels: int = 200):
         get_position="[lon, lat]",
         get_radius="radius",
         # RGBA - Red , Green, Blue, Alpha (opacity)
-        get_fill_color="[200,30,0,160]"
+        get_fill_color="[200,30,0,160]",
+        pickable=True
     )
     
     # Show city labels only for the top-N cities by file count (Do we need that?)
