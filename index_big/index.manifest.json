@@ -1,0 +1,7 @@
+{
+  "backend": "sqlite",
+  "db": "index\\index.db",
+  "docs": 4846,
+  "terms": 68361,
+  "avgdl": 11.06046223689641
+}
