@@ -17,6 +17,7 @@ import html # colorful matches
 import numpy as np # for scientific and mathematical calculations
 import unicodedata # py lib for Unicode characters
 import argparse # parse command-line arguments
+import os
 import gzip # read/write gzip-compressed files
 import json
 from pathlib import Path # path handling in an OS-agnostic way, better handling paths esp for city names extractions from .exb files
@@ -407,11 +408,23 @@ def expand_variants(token: str) -> frozenset[str]:
 # --------------- Args & setup ---------
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(add_help=False)
-    ap.add_argument("--index", required=True,default="index_unique", help="Index dir (JSON) or .db (SQLite)")
+    # Default to 'index_unique' (override with env INDEX_DIR or --index)
+    default_index = os.environ.get("INDEX_DIR", "index_unique")
+    ap.add_argument(
+        "--index",
+        default=default_index,
+        help="Index dir (JSON) or .db (SQLite). Defaults to env INDEX_DIR or 'index_unique'.",
+    )
     ap.add_argument("--ngrams", type=int, default=1)
     ap.add_argument("--topk", type=int, default=10)
-    ap.add_argument("--extra-sentences", type=int, default=0, help="Include this many extra sentences on each side of a match in overview snippets.")
-    return ap.parse_args()
+    ap.add_argument(
+        "--extra-sentences",
+        type=int,
+        default=0,
+        help="Include this many extra sentences on each side of a match in overview snippets.",
+    )
+    args, _ = ap.parse_known_args()
+    return args
 
 st.set_page_config(page_title="EXMARaLDA Search", layout="wide")
 
@@ -467,6 +480,15 @@ def _build_context_bundles(events: List[dict], hilite: re.Pattern, extra: int) -
 def run_ui():
     args = parse_args()
     
+    # Ensure default index exists; show a helpful message if missing
+    if not Path(args.index).exists():
+        st.error(
+            f"Index path '{args.index}' not found. "
+            "Put your index in './index_unique', set env var INDEX_DIR, "
+            "or run with: streamlit run app_v13_default_index.py -- --index /path/to/index"
+        )
+        st.stop()
+
     # Progress indicator
     with st.spinner("Loading index..."):
         idx = load_index(args.index)
