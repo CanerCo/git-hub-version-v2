@@ -498,7 +498,7 @@ def run_ui():
         ngrams = st.slider("Max n-gram size", 1, 8, args.ngrams, help="Number of words to search together.")
         topk = st.slider("Top K files", 5, 690, args.topk, help="How many top results to show (max 690)")
         extra = st.slider("Extra context (event lines)", 0, 10, 0, help="Context provider")
-        plural_mode = st.checkbox("Include plural forms", value=False, help="Match plural variants of words")
+        plural_mode = st.checkbox("Include plural/inflected forms", value=False, help="Match plural/inflected variants of words")
         exact_phrase = st.checkbox("Match whole phrase only", value=False, help="Treat multi-word queries as an exact phrase (ignore individual words)")
         
     q = st.text_input("Query", placeholder="e.g., arbeit bauer feldarbeit").strip()
