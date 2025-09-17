@@ -407,7 +407,7 @@ def expand_variants(token: str) -> frozenset[str]:
 # --------------- Args & setup ---------
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(add_help=False)
-    ap.add_argument("--index", required=True,default="index_unique", help="Index dir (JSON) or .db (SQLite)")
+    ap.add_argument("--index",default="index_unique", help="Index dir (JSON) or .db (SQLite)")
     ap.add_argument("--ngrams", type=int, default=1)
     ap.add_argument("--topk", type=int, default=10)
     ap.add_argument("--extra-sentences", type=int, default=0, help="Include this many extra sentences on each side of a match in overview snippets.")
