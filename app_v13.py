@@ -295,10 +295,30 @@ def render_map(df_points: pd.DataFrame, top_n_labels: int = 200):
         tooltip=tooltip,
     )
     st.pydeck_chart(deck)
+    def rgba_to_hex(rgba):
+        r, g, b, _ = rgba
+        return f"#{r:02X}{g:02X}{b:02X}"
 
     with st.expander("Dialect legend", expanded=False):
-        legend = [(name, str(DIALECT_COLORS[name])) for name in sorted(DIALECT_COLORS)]
-        st.dataframe(legend, hide_index=True, use_container_width=True)
+        rows = []
+        for name in sorted(DIALECT_COLORS):
+            r, g, b, a = DIALECT_COLORS[name]
+            rows.append({
+                "Dialect": name,
+                "Color": rgba_to_hex((r, g, b, a)),      # shown as a swatch
+                "Opacity": round(a / 255 * 100),         # keep alpha info
+            })
+        df = pd.DataFrame(rows)
+
+        st.dataframe(
+            df,
+            hide_index=True,
+            use_container_width=True,
+            column_config={
+                "Color": st.column_config.ColorColumn("Color", help="Hex color"),
+                "Opacity": st.column_config.NumberColumn("Opacity", format="%d%%"),
+            },
+        )
     
 # --------- Tokenizer -----------
 # \w matches any word character (equivalent to [a-zA-Z0-9_])
