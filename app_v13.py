@@ -84,7 +84,7 @@ DIALECT_BY_CODE = {
 
 # RGBA (0–255) per dialect (shared by bubbles + labels)
 DIALECT_COLORS = {
-    "Zentralschwäbisch":       [0, 92, 175, 200],
+    "Zentralschwäbisch":       [0, 92, 175, 444],
     "Mittelostschwäbisch":     [230, 159, 0, 200],
     "Nordostschwäbisch":       [86, 180, 233, 200],
     "Westschwäbisch":          [0, 158, 115, 200],
