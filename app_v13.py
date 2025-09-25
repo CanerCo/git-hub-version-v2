@@ -84,20 +84,20 @@ DIALECT_BY_CODE = {
 
 # RGBA (0–255) per dialect (shared by bubbles + labels)
 DIALECT_COLORS = {
-    "Zentralschwäbisch":       [0, 92, 175, 150],
-    "Mittelostschwäbisch":     [230, 159, 0, 150],
-    "Nordostschwäbisch":       [86, 180, 233, 150],
-    "Westschwäbisch":          [0, 158, 115, 150],
-    "Südschwäbisch":           [213, 94, 0, 150],
-    "Bodensee-Alemannisch":    [240, 228, 66, 150],
-    "Ostfränkisch":            [43, 160, 45, 150],
-    "Südfränkisch":            [255, 127, 14, 150],
-    "Rheinfränkisch":          [31, 119, 180, 150],
-    "Oberrhein-Alemannisch":   [127, 201, 127, 150],
-    "Hochalemannisch":         [190, 174, 212, 150],
-    "Schwäbisch-Fränkisch":    [199, 124, 255, 150],
-    "Outside BW":              [150, 150, 150, 150],   # neutral gray for out-of-scope
-    "Unknown":                 [120, 120, 120, 150],
+    "Zentralschwäbisch":       [0, 92, 175, 200],
+    "Mittelostschwäbisch":     [230, 159, 0, 200],
+    "Nordostschwäbisch":       [86, 180, 233, 200],
+    "Westschwäbisch":          [0, 158, 115, 200],
+    "Südschwäbisch":           [213, 94, 0, 200],
+    "Bodensee-Alemannisch":    [240, 228, 66, 200],
+    "Ostfränkisch":            [43, 160, 45, 200],
+    "Südfränkisch":            [255, 127, 14, 200],
+    "Rheinfränkisch":          [31, 119, 180, 200],
+    "Oberrhein-Alemannisch":   [127, 201, 127, 200],
+    "Hochalemannisch":         [190, 174, 212, 200],
+    "Schwäbisch-Fränkisch":    [199, 124, 255, 200],
+    "Outside BW":              [150, 150, 150, 200],   # neutral gray for out-of-scope
+    "Unknown":                 [120, 120, 120, 200],
 }
 
 @st.cache_data(show_spinner=False)
