@@ -103,7 +103,7 @@ DIALECT_COLORS = {
 }
 
 @st.cache_data(show_spinner=False)
-def load_meta(path: str = "meta_analysis.csv") -> pd.DataFrame:
+def load_meta(path: str = "meta_analysis_edited.csv") -> pd.DataFrame:
     df = pd.read_csv(path)
     # normalize city from file name, e.g. "Stuttgart I-123.exb" -> "Stuttgart"
     def city_from_filename(name: str) -> str:
