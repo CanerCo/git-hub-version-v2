@@ -266,7 +266,9 @@ def prepare_city_points(results_df: pd.DataFrame) -> pd.DataFrame:
         return "Outside BW" if d is None else d
 
     points["dialect"] = points["landkreis_mode"].map(code_to_dialect)
-    points["dialect_color"] = points["dialect"].map(lambda d: DIALECT_COLORS.get(d, DIALECT_COLORS["Unknown"]))
+    # Add separate colors for bubbles and labels
+    points["bubble_color"] = points["dialect"].map(lambda d: DIALECT_BUBBLE_COLORS.get(d, DIALECT_BUBBLE_COLORS["Unknown"]))
+    points["label_color"] = points["dialect"].map(lambda d: DIALECT_LABEL_COLORS.get(d, DIALECT_LABEL_COLORS["Unknown"]))
 
     # radius (keep your scaling; example: log scaling)
     points["radius"] = (points["matches"].clip(lower=1).apply(lambda x: 1000 + 400 * (x**0.5)))
