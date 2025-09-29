@@ -83,24 +83,59 @@ DIALECT_BY_CODE = {
     "MN": None, "LL": None, "NU": None, "ND": None, "AIC": None,
 }
 
-
-# RGBA (0–255) per dialect (shared by bubbles + labels)
-DIALECT_COLORS = {
-    "Zentralschwäbisch":       [0, 92, 175, 200],
-    "Mittelostschwäbisch":     [230, 159, 0, 200],
-    "Nordostschwäbisch":       [86, 180, 233, 200],
-    "Westschwäbisch":          [0, 158, 115, 200],
-    "Südschwäbisch":           [213, 94, 0, 200],
-    "Bodensee-Alemannisch":    [240, 228, 66, 200],
-    "Ostfränkisch":            [43, 160, 45, 200],
-    "Südfränkisch":            [255, 127, 14, 200],
-    "Rheinfränkisch":          [31, 119, 180, 200],
-    "Oberrhein-Alemannisch":   [127, 201, 127, 200],
-    "Hochalemannisch":         [190, 174, 212, 200],
-    "Schwäbisch-Fränkisch":    [199, 124, 255, 200],
-    "Outside BW":              [150, 150, 150, 200],   # neutral gray for out-of-scope
-    "Unknown":                 [120, 120, 120, 200],
+DIALECT_BASE_COLORS = {
+    "Zentralschwäbisch":       [255, 0, 0],       # Pure red
+    "Mittelostschwäbisch":     [255, 165, 0],     # Orange  
+    "Nordostschwäbisch":       [255, 255, 0],     # Yellow
+    "Westschwäbisch":          [0, 255, 0],       # Pure green
+    "Südschwäbisch":           [0, 255, 255],     # Cyan
+    "Bodensee-Alemannisch":    [0, 0, 255],       # Pure blue
+    "Ostfränkisch":            [128, 0, 128],     # Purple
+    "Südfränkisch":            [255, 0, 255],     # Magenta
+    "Rheinfränkisch":          [165, 42, 42],     # Brown
+    "Oberrhein-Alemannisch":   [255, 192, 203],   # Pink
+    "Hochalemannisch":         [0, 128, 128],     # Teal
+    "Schwäbisch-Fränkisch":    [128, 128, 0],     # Olive
+    "Outside BW":              [128, 128, 128],   # Gray
+    "Unknown":                 [64, 64, 64],      # Dark gray
 }
+
+# Bubble colors (opacity 150)
+DIALECT_BUBBLE_COLORS = {
+    dialect: color + [100] for dialect, color in DIALECT_BASE_COLORS.items()
+}
+
+# Label colors (opacity 255) 
+DIALECT_LABEL_COLORS = {
+    dialect: color + [255] for dialect, color in DIALECT_BASE_COLORS.items()
+}
+
+# For legend (can use either - suggest 255 for better visibility)
+DIALECT_COLORS = DIALECT_LABEL_COLORS
+
+def _dialect_legend_html(colors: dict) -> str:
+    # Build a responsive swatch grid
+    items = []
+    for name, (r, g, b, a) in sorted(colors.items()):
+        rgba_css = f"rgba({r},{g},{b},{a/255:.3f})"
+        items.append(
+            f'<div class="legend-item"><span class="swatch" style="background:{rgba_css};"></span>'
+            f'<span class="label">{name}</span></div>'
+        )
+    
+    items_html = '\n'.join(items)
+    
+    return f"""
+    <style>
+      .legend-item {{display:flex;align-items:center;gap:.6rem;padding:.15rem 0;}}
+      .legend-item .swatch {{width:1.15rem;height:1.15rem;border:1px solid rgba(0,0,0,.28);border-radius:3px;display:inline-block;}}
+      .legend-item .label {{font-size:.9rem;line-height:1;}}
+    </style>
+
+{items_html}
+    </div>
+    """
+
 
 @st.cache_data(show_spinner=False)
 def load_meta(path: str = "meta_analysis_edited.csv") -> pd.DataFrame:
@@ -243,6 +278,9 @@ def prepare_city_points(results_df: pd.DataFrame) -> pd.DataFrame:
 
 # MAP CONFIGURATIONS
 def render_map(df_points: pd.DataFrame, top_n_labels: int = 200):
+    """
+    Render map with different opacity for bubbles (150) and labels (255)
+    """
     import pydeck as pdk
     if df_points.empty:
         st.info("No city data to display on map.")
@@ -254,19 +292,19 @@ def render_map(df_points: pd.DataFrame, top_n_labels: int = 200):
         zoom=6, pitch=0
     )
 
-    # BUBBLES colored by dialect
+    # BUBBLES with opacity 150
     scatter = pdk.Layer(
         "ScatterplotLayer",
         data=df_points,
         get_position="[lon, lat]",
         get_radius="radius",
-        get_fill_color="dialect_color",       # <— changed
+        get_fill_color="bubble_color",        # <-- uses bubble_color (opacity 150)
         get_line_color="[0,0,0,120]",
         line_width_min_pixels=1,
         pickable=True,
     )
 
-    # LABELS colored by dialect
+    # LABELS with opacity 255
     df_labelled = df_points.nlargest(top_n_labels, "matches")
     labels = pdk.Layer(
         "TextLayer",
@@ -277,7 +315,7 @@ def render_map(df_points: pd.DataFrame, top_n_labels: int = 200):
         get_text_anchor="'start'",
         get_alignment_baseline="'top'",
         get_pixel_offset="[6, -6]",
-        get_color="dialect_color",            # <— colored text
+        get_color="label_color",             # <-- uses label_color (opacity 255)
         pickable=False,
     )
 
@@ -298,9 +336,9 @@ def render_map(df_points: pd.DataFrame, top_n_labels: int = 200):
     )
     st.pydeck_chart(deck)
 
-    with st.expander("Dialect legend", expanded=False):
-        legend = [(name, str(DIALECT_COLORS[name])) for name in sorted(DIALECT_COLORS)]
-        st.dataframe(legend, hide_index=True, use_container_width=True)
+    with st.expander("Dialect Colors", expanded=False):
+        html = _dialect_legend_html(DIALECT_COLORS)  # Uses label colors for legend
+        st.markdown(html, unsafe_allow_html=True)
     
 # --------- Tokenizer -----------
 # \w matches any word character (equivalent to [a-zA-Z0-9_])
